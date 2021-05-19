@@ -13,6 +13,7 @@
       - test.pkl
   - module
     - features.py
+      - 集約特徴量(keyでgroupbyし、max,min,max-min,mean,median,mode,std,zscore,skew)
     - models.py
   - notebooks
     - nb000.ipynb
