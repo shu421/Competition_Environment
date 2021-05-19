@@ -18,4 +18,16 @@
     - nb000.ipynb
   - output
     - nb000
-    - 
+      - preds
+        - nb000_oof.pkl
+        - nb000_preds.pkl
+      - reports
+        - confusion_matrix.png
+        - Experiment.log
+        - tree_importance.csv
+        - tree_importance.png
+      - trained
+        - _SEED000_FOLD00_model.pkl
+  - requirements.txt
+  - submission
+    - exp000.csv
