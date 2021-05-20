@@ -13,9 +13,22 @@
       - test.pkl
   - module
     - features.py
+      - 集約特徴量(keyでgroupbyし、max,min,max-min,mean,median,mode,std,zscore,skew)
     - models.py
   - notebooks
     - nb000.ipynb
   - output
     - nb000
-    - 
+      - preds
+        - nb000_oof.pkl
+        - nb000_preds.pkl
+      - reports
+        - confusion_matrix.png
+        - Experiment.log
+        - tree_importance.csv
+        - tree_importance.png
+      - trained
+        - _SEED000_FOLD00_model.pkl
+  - requirements.txt
+  - submission
+    - exp000.csv
