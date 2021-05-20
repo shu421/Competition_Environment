@@ -19,6 +19,7 @@
     - nb000.ipynb
   - output
     - nb000
+      - feature
       - preds
         - nb000_oof.pkl
         - nb000_preds.pkl
