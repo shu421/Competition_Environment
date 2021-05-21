@@ -5,6 +5,9 @@ import utils
 import numpy as np
 import pandas as pd
 
+import matplotlib.pyplot as plt
+import seaborn as sns
+
 from abc import abstractmethod
 
 from sklearn.metrics import mean_squared_error
@@ -89,8 +92,8 @@ class Lgbm(Base_Model):
                          valid_names=['valid'],
                          early_stopping_rounds=100,
                          num_boost_round=99999,
-                         verbose_eval=300,
-                         #categorical_features=cat_col
+                         verbose_eval=False,
+                         #categorical_feature=cat_col
                          )
         self.models.append(model)
         return model
