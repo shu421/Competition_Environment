@@ -1,3 +1,13 @@
+import numpy as np
+import pandas as pd
+import matplotlib.pyplot as plt
+import seaborn as sns
+from abc import abstractmethod
+import optuna.integration.lightgbm as lgbo
+import lightgbm as lgb
+
+from sklearn.metrics import f1_score
+
 class Base_Model(object):
     @abstractmethod
     def fit(self, x_train, y_train, x_valid, y_valid):
@@ -71,7 +81,8 @@ class Lgbm(Base_Model):
             early_stopping_rounds=20,
             num_boost_round=10000,
             verbose_eval=False,
-            categorical_feature=cat_col)
+            #categorical_feature=cat_col
+                         )
         self.models.append(model)
         return model
     
@@ -88,7 +99,7 @@ class Lgbm(Base_Model):
         early_stopping_rounds=20,
         verbose_eval=100,
         folds=cv,
-        categorical_feature=cat_col
+        #categorical_feature=cat_col
         )
 
         tuner_cv.run()

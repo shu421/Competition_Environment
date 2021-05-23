@@ -109,7 +109,7 @@ class Lgbm(Base_Model):
         params,
         lgbo_train,
         num_boost_round=99999,
-        verbose_eval=300,
+        verbose_eval=-1,
         folds=cv,
         #categorical_feature=cat_col
         )
@@ -134,11 +134,11 @@ class Lgbm(Base_Model):
         
         order = feature_importance_df.groupby('column').sum()[['feature_importance']].sort_values('feature_importance',ascending=False).index[:50]
 
-        fig, ax = plt.subplots(2,1,figsize=(max(6, len(order) * .4), 14))
-        sns.boxenplot(data=feature_importance_df, x='column', y='feature_importance', order=order, ax=ax[0], palette='viridis')
-        ax[0].tick_params(axis='x', rotation=90)
-        ax[0].grid()
-        fig.tight_layout()
+        fig, ax = plt.subplots(1,1,figsize=(12, max(4, len(order) * .2)))
+        sns.boxenplot(data=feature_importance_df, x='feature_importance', y='column', order=order, ax=ax, palette='viridis')
+        ax.tick_params(axis='y')
+        ax.grid()
+        fig.tight_layout();
         return fig,ax
     
     
