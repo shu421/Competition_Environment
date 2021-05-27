@@ -12,12 +12,17 @@ from abc import abstractmethod
 
 from sklearn.metrics import mean_squared_error
 from sklearn.metrics import f1_score
+from sklearn.metrics import accuracy_score
+from sklearn.model_selection import StratifiedKFold
 
 import lightgbm as lgb
 import optuna.integration.lightgbm as lgbo
 
+SEED = 71
 
 class Base_Model(object):
+#     def __init__(self):
+#         self.SEED = 71
     @abstractmethod
     def fit(self, train_x, train_y, valid_x, valid_y):
         raise NotImplementedError
@@ -75,12 +80,53 @@ class Base_Model(object):
         return oof_preds, test_preds, evals_results
     
     
+    def adversal_validation(self, train, test):
+        train['is_train'] = 1
+        test['is_train'] = 0
+        all_df = pd.concat([train, test], axis=0)
+        all_df = all_df.fillna(-9999)
+        all_df = all_df.reset_index(drop=True)
+        target = all_df['is_train'].astype(int)
+        all_df = all_df.drop(columns=['is_train'])
+
+        skf = StratifiedKFold(5, shuffle=True, random_state=self.SEED)
+
+        oof_preds = np.zeros(len(all_df))
+
+        for i_fold, (trn_idx, val_idx) in enumerate(skf.split(all_df, target)):
+
+            x_train = all_df.iloc[trn_idx]
+            y_train = target.iloc[trn_idx]
+            x_val = all_df.iloc[val_idx]
+            y_val = target.iloc[val_idx]
+
+            model = self.fit(x_train, y_train, x_val, y_val)
+            oof_preds[val_idx] = self.predict_adversal(model, x_val)
+            
+            oof_score = accuracy_score(y_val, np.round(oof_preds[val_idx])) # np.round : 四捨五入
+            print(f'fold{i_fold}:Acc {oof_score}')
+
+        oof_score = accuracy_score(target, np.round(oof_preds))
+        print('-'*50)
+        print(f'oof score : {oof_score}')
+
+        evals_results = {"evals_results":{
+            "oof_score":oof_score,
+            "n_data":len(train),
+            "n_features":len(train.columns)
+        }}
+
+        return oof_preds, evals_results
+    
+    
+    
     
 class Lgbm(Base_Model):
     def __init__(self, model_params):
         self.model_params = model_params
         self.models = []
         self.feature_cols = None
+        self.SEED = 71
         
     def fit(self, train_x, train_y, valid_x, valid_y):
         lgb_train = lgb.Dataset(train_x, train_y)
@@ -101,6 +147,10 @@ class Lgbm(Base_Model):
     def predict(self, model, features):
         self.feature_cols = features.columns
         return np.argmax(model.predict(features), axis=1)
+    
+    def predict_adversal(self, model, features):
+        self.feature_cols = features.columns
+        return model.predict(features)
     
     def tuning(self, y, X, params, cv):
         lgbo_train = lgbo.dataset(X, y)
